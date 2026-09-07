@@ -1,0 +1,96 @@
+-- =============================================
+-- 步骤 5：创建索引（可能耗时较长）
+-- 来源：mimic-code mimic-iv/buildmimic/postgres/index.sql
+-- =============================================
+
+SET search_path TO mimiciv_hosp;
+
+DROP INDEX IF EXISTS mimiciv_hosp.admissions_idx01 CASCADE;
+CREATE INDEX admissions_idx01 ON mimiciv_hosp.admissions (admittime, dischtime, deathtime);
+DROP INDEX IF EXISTS mimiciv_hosp.d_icd_diag_idx02;
+CREATE INDEX d_icd_diag_idx02 ON mimiciv_hosp.d_icd_diagnoses (long_title);
+DROP INDEX IF EXISTS mimiciv_hosp.d_icd_proc_idx02;
+CREATE INDEX d_icd_proc_idx02 ON mimiciv_hosp.d_icd_procedures (long_title);
+DROP INDEX IF EXISTS mimiciv_hosp.drgcodes_idx01;
+CREATE INDEX drgcodes_idx01 ON mimiciv_hosp.drgcodes (drg_code, drg_type);
+DROP INDEX IF EXISTS mimiciv_hosp.drgcodes_idx02;
+CREATE INDEX drgcodes_idx02 ON mimiciv_hosp.drgcodes (description, drg_severity);
+DROP INDEX IF EXISTS mimiciv_hosp.d_labitems_idx01;
+CREATE INDEX d_labitems_idx01 ON mimiciv_hosp.d_labitems (label, fluid, category);
+DROP INDEX IF EXISTS mimiciv_hosp.emar_detail_idx01;
+CREATE INDEX emar_detail_idx01 ON mimiciv_hosp.emar_detail (pharmacy_id);
+DROP INDEX IF EXISTS mimiciv_hosp.emar_detail_idx02;
+CREATE INDEX emar_detail_idx02 ON mimiciv_hosp.emar_detail (product_code);
+DROP INDEX IF EXISTS mimiciv_hosp.emar_detail_idx03;
+CREATE INDEX emar_detail_idx03 ON mimiciv_hosp.emar_detail (route, site, side);
+DROP INDEX IF EXISTS mimiciv_hosp.emar_detail_idx04;
+CREATE INDEX emar_detail_idx04 ON mimiciv_hosp.emar_detail (product_description);
+DROP INDEX IF EXISTS mimiciv_hosp.emar_idx01;
+CREATE INDEX emar_idx01 ON mimiciv_hosp.emar (poe_id);
+DROP INDEX IF EXISTS mimiciv_hosp.emar_idx02;
+CREATE INDEX emar_idx02 ON mimiciv_hosp.emar (pharmacy_id);
+DROP INDEX IF EXISTS mimiciv_hosp.emar_idx03;
+CREATE INDEX emar_idx03 ON mimiciv_hosp.emar (charttime, scheduletime, storetime);
+DROP INDEX IF EXISTS mimiciv_hosp.emar_idx04;
+CREATE INDEX emar_idx04 ON mimiciv_hosp.emar (medication);
+DROP INDEX IF EXISTS mimiciv_hosp.hcpcsevents_idx04;
+CREATE INDEX hcpcsevents_idx04 ON mimiciv_hosp.hcpcsevents (short_description);
+DROP INDEX IF EXISTS mimiciv_hosp.labevents_idx01;
+CREATE INDEX labevents_idx01 ON mimiciv_hosp.labevents (charttime, storetime);
+DROP INDEX IF EXISTS mimiciv_hosp.labevents_idx02;
+CREATE INDEX labevents_idx02 ON mimiciv_hosp.labevents (specimen_id);
+DROP INDEX IF EXISTS mimiciv_hosp.microbiologyevents_idx01;
+CREATE INDEX microbiologyevents_idx01 ON mimiciv_hosp.microbiologyevents (chartdate, charttime, storedate, storetime);
+DROP INDEX IF EXISTS mimiciv_hosp.microbiologyevents_idx02;
+CREATE INDEX microbiologyevents_idx02 ON mimiciv_hosp.microbiologyevents (spec_itemid, test_itemid, org_itemid, ab_itemid);
+DROP INDEX IF EXISTS mimiciv_hosp.microbiologyevents_idx03;
+CREATE INDEX microbiologyevents_idx03 ON mimiciv_hosp.microbiologyevents (micro_specimen_id);
+DROP INDEX IF EXISTS mimiciv_hosp.patients_idx01;
+CREATE INDEX patients_idx01 ON mimiciv_hosp.patients (anchor_age);
+DROP INDEX IF EXISTS mimiciv_hosp.patients_idx02;
+CREATE INDEX patients_idx02 ON mimiciv_hosp.patients (anchor_year);
+DROP INDEX IF EXISTS mimiciv_hosp.pharmacy_idx01;
+CREATE INDEX pharmacy_idx01 ON mimiciv_hosp.pharmacy (poe_id);
+DROP INDEX IF EXISTS mimiciv_hosp.pharmacy_idx02;
+CREATE INDEX pharmacy_idx02 ON mimiciv_hosp.pharmacy (starttime, stoptime);
+DROP INDEX IF EXISTS mimiciv_hosp.pharmacy_idx03;
+CREATE INDEX pharmacy_idx03 ON mimiciv_hosp.pharmacy (medication);
+DROP INDEX IF EXISTS mimiciv_hosp.pharmacy_idx04;
+CREATE INDEX pharmacy_idx04 ON mimiciv_hosp.pharmacy (route);
+DROP INDEX IF EXISTS mimiciv_hosp.poe_idx01;
+CREATE INDEX poe_idx01 ON mimiciv_hosp.poe (order_type);
+DROP INDEX IF EXISTS mimiciv_hosp.prescriptions_idx01;
+CREATE INDEX prescriptions_idx01 ON mimiciv_hosp.prescriptions (starttime, stoptime);
+DROP INDEX IF EXISTS mimiciv_hosp.transfers_idx01;
+CREATE INDEX transfers_idx01 ON mimiciv_hosp.transfers (hadm_id);
+DROP INDEX IF EXISTS mimiciv_hosp.transfers_idx02;
+CREATE INDEX transfers_idx02 ON mimiciv_hosp.transfers (intime);
+DROP INDEX IF EXISTS mimiciv_hosp.transfers_idx03;
+CREATE INDEX transfers_idx03 ON mimiciv_hosp.transfers (careunit);
+
+SET search_path TO mimiciv_icu;
+
+DROP INDEX IF EXISTS mimiciv_icu.chartevents_idx01;
+CREATE INDEX chartevents_idx01 ON mimiciv_icu.chartevents (charttime, storetime);
+DROP INDEX IF EXISTS mimiciv_icu.datetimeevents_idx01;
+CREATE INDEX datetimeevents_idx01 ON mimiciv_icu.datetimeevents (charttime, storetime);
+DROP INDEX IF EXISTS mimiciv_icu.datetimeevents_idx02;
+CREATE INDEX datetimeevents_idx02 ON mimiciv_icu.datetimeevents (value);
+DROP INDEX IF EXISTS mimiciv_icu.d_items_idx01;
+CREATE INDEX d_items_idx01 ON mimiciv_icu.d_items (label, abbreviation);
+DROP INDEX IF EXISTS mimiciv_icu.d_items_idx02;
+CREATE INDEX d_items_idx02 ON mimiciv_icu.d_items (category);
+DROP INDEX IF EXISTS mimiciv_icu.icustays_idx01;
+CREATE INDEX icustays_idx01 ON mimiciv_icu.icustays (first_careunit, last_careunit);
+DROP INDEX IF EXISTS mimiciv_icu.icustays_idx02;
+CREATE INDEX icustays_idx02 ON mimiciv_icu.icustays (intime, outtime);
+DROP INDEX IF EXISTS mimiciv_icu.inputevents_idx01;
+CREATE INDEX inputevents_idx01 ON mimiciv_icu.inputevents (starttime, endtime);
+DROP INDEX IF EXISTS mimiciv_icu.inputevents_idx02;
+CREATE INDEX inputevents_idx02 ON mimiciv_icu.inputevents (ordercategorydescription);
+DROP INDEX IF EXISTS mimiciv_icu.outputevents_idx01;
+CREATE INDEX outputevents_idx01 ON mimiciv_icu.outputevents (charttime, storetime);
+DROP INDEX IF EXISTS mimiciv_icu.procedureevents_idx01;
+CREATE INDEX procedureevents_idx01 ON mimiciv_icu.procedureevents (starttime, endtime);
+DROP INDEX IF EXISTS mimiciv_icu.procedureevents_idx02;
+CREATE INDEX procedureevents_idx02 ON mimiciv_icu.procedureevents (ordercategoryname);

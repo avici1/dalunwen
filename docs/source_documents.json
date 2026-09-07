@@ -1,0 +1,38 @@
+[
+  {
+    "root": 2,
+    "relative": "0830/补充0831/代码/README_第五章完整重算.md",
+    "repository_path": "90_history/clinical/SOURCE_README_第五章完整重算.md",
+    "sha256": "71f47cba87c0efe0dd8b928aa3a1688213e1e6bccf7312fb10781a87075c6639"
+  },
+  {
+    "root": 2,
+    "relative": "0830/补充0831/代码/README_补充0831.md",
+    "repository_path": "90_history/clinical/SOURCE_README_补充0831.md",
+    "sha256": "8f31ffb9f4806312615281810c0c91445a88f27da7d3a2be13d5334cc8945633"
+  },
+  {
+    "root": 2,
+    "relative": "0830/结果/RSF5_4A/README_统一评价口径.md",
+    "repository_path": "02_clinical/04_evaluation/alternative_static_contract/SOURCE_README.md",
+    "sha256": "badee5c41ab6efad171efe7e87d8ec2a32d3f4a62541dcf5d526a9277dff1e4c"
+  },
+  {
+    "root": 2,
+    "relative": "0830/结果/RSF5_4B/README_统一评价口径.md",
+    "repository_path": "02_clinical/04_evaluation/alternative_dynamic_contract/SOURCE_README.md",
+    "sha256": "e7b0e6b7dd943c29e2b3fa2450aee73ec856fbb84b1a9ee449ffe3e8c149ecca"
+  },
+  {
+    "root": 2,
+    "relative": "MIMIC数据库_代码/navicat/README.md",
+    "repository_path": "02_clinical/01_sql/database_setup/SOURCE_README.md",
+    "sha256": "5376b1139d4857b9296fcd44dab52bd7aa73f7ed34001cd6a474f56fc95b424a"
+  },
+  {
+    "root": 2,
+    "relative": "0830/CODEX/脚本/README_复现说明.md",
+    "repository_path": "02_clinical/03_models/unified_pipeline/SOURCE_README_复现说明.md",
+    "sha256": "5c1c0fa5dde0d7df28cf0fe4277e4da190a74f879b8f492fa36174619c6bcaa7"
+  }
+]

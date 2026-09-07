@@ -1,0 +1,132 @@
+[
+  {
+    "repository_path": "90_history/reporting_edits/ba32552744__add_ch5_tuning_0827_4.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/reporting_edits/9f17eba7bd__delete_533_0827_6.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/reporting_edits/d6ec0b1f06__fix_ch5_framework_0827_3.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/reporting_edits/ce4a9c9d06__inspect_table_fmt.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/reporting_edits/015c599a97__revise_ch5_0828_1.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/reporting_edits/4d9df0e5ce__split_table51_schemeC.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/reporting_edits/345f3aa42c__update_ch5_0828_2.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/reporting_edits/f6968fcb97__update_ch5_framework_0827_3.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/reporting_edits/2de2648388__update_ch5_table_format_0827.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/reporting_edits/a5f0899b83__update_table52_schemeA.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/reporting_edits/1ca4c97eb6__update_tuning_0827_5.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/clinical/bf0487096e_RSFLC_SHAP.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/clinical/625c42d743_SHAP作图.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "02_clinical/05_explanation/rsflc_shap/RSFLC_stroke_SHAP.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "02_clinical/02_preprocessing/source_0824/add_train_5fold_0826.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/simulation/0e14e0b173__cmp_censor_time.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "02_clinical/06_reporting/update_article.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "02_clinical/06_reporting/verify_article.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/clinical/6b02bd7cad_00_fix_utf8_manifests.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/clinical/3f421bbeec_impute_0318_filter2_to_0319PRO.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/clinical/2d80e5970f_impute_0319_inputdata.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/clinical/0e8f22e35e_model_4models_0319.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "90_history/clinical/846f6719cb_build_result_Friedman_wilcoxon_boostrap.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "01_simulation/06_figures/fig_ch4.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "02_clinical/06_reporting/fig_ch5.py",
+    "status": "pass",
+    "detail": ""
+  },
+  {
+    "repository_path": "01_simulation/05_evaluation/expand_var_to_columns.py",
+    "status": "pass",
+    "detail": ""
+  }
+]

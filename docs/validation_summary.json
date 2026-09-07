@@ -1,0 +1,23 @@
+{
+  "source_files_checked": 485,
+  "unique_source_files_checked": 317,
+  "unchanged_source_files": 485,
+  "matching_copied_sources": 317,
+  "extra_original_documents": 6,
+  "integrity_failures": [],
+  "R_parse_only": {
+    "total": 276,
+    "passed": 271,
+    "issues": 5,
+    "note": "File-based parse with the detected encoding; see individual records. Encoding/BOM issues are not model execution failures."
+  },
+  "Python_AST_only": {
+    "total": 26,
+    "passed": 26,
+    "issues": 0
+  },
+  "models_executed": false,
+  "database_accessed": false,
+  "source_modified": false,
+  "deduplication": "SHA-256 equality; all original source paths mapped"
+}

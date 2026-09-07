@@ -1,0 +1,55 @@
+# 文件索引
+
+每个条目链接到保留的源码；完整原始位置与重复副本见 [source_manifest.csv](source_manifest.csv)。
+
+- [02_clinical/01_sql/cohort_extraction/build_data_0506.sql](../02_clinical/01_sql/cohort_extraction/build_data_0506.sql) — source_2/MIMIC数据库_代码/sql/build_data_0506.sql（919 行）
+- [02_clinical/01_sql/cohort_extraction/stroke_extract_0520.sql](../02_clinical/01_sql/cohort_extraction/stroke_extract_0520.sql) — source_2/MIMIC数据库_代码/sql/stroke_extract_0520.sql（355 行）
+- [02_clinical/01_sql/cohort_extraction/stroke_patient_0520.sql](../02_clinical/01_sql/cohort_extraction/stroke_patient_0520.sql) — source_2/MIMIC数据库_代码/sql/stroke_patient_0520.sql（102 行）
+- [02_clinical/01_sql/database_setup/01_create_database.sql](../02_clinical/01_sql/database_setup/01_create_database.sql) — source_2/MIMIC数据库_代码/navicat/01_create_database.sql（6 行）
+- [02_clinical/01_sql/database_setup/02_create_schema_tables.sql](../02_clinical/01_sql/database_setup/02_create_schema_tables.sql) — source_2/MIMIC数据库_代码/navicat/02_create_schema_tables.sql（481 行）
+- [02_clinical/01_sql/database_setup/03_load_data.sql](../02_clinical/01_sql/database_setup/03_load_data.sql) — source_2/MIMIC数据库_代码/navicat/03_load_data.sql（49 行）
+- [02_clinical/01_sql/database_setup/04_constraint.sql](../02_clinical/01_sql/database_setup/04_constraint.sql) — source_2/MIMIC数据库_代码/navicat/04_constraint.sql（132 行）
+- [02_clinical/01_sql/database_setup/05_index.sql](../02_clinical/01_sql/database_setup/05_index.sql) — source_2/MIMIC数据库_代码/navicat/05_index.sql（96 行）
+- [02_clinical/02_preprocessing/source_0521/prep_sofa_inputs.R](../02_clinical/02_preprocessing/source_0521/prep_sofa_inputs.R) — source_2/0521/代码/prep_sofa_inputs.R（53 行）
+- [02_clinical/02_preprocessing/source_0521/变量筛选.R](../02_clinical/02_preprocessing/source_0521/%E5%8F%98%E9%87%8F%E7%AD%9B%E9%80%89.R) — source_2/0521/代码/变量筛选.R（438 行）
+- [02_clinical/02_preprocessing/source_0521/数据分折.R](../02_clinical/02_preprocessing/source_0521/%E6%95%B0%E6%8D%AE%E5%88%86%E6%8A%98.R) — source_2/0521/代码/数据分折.R（396 行）
+- [02_clinical/02_preprocessing/source_0521/数据处理_1.R](../02_clinical/02_preprocessing/source_0521/%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86_1.R) — source_2/0521/代码/数据处理_1.R（579 行）
+- [02_clinical/02_preprocessing/source_0521/数据处理_2.R](../02_clinical/02_preprocessing/source_0521/%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86_2.R) — source_2/0521/代码/数据处理_2.R（300 行）
+- [02_clinical/02_preprocessing/source_0521/纵向P1P99清洗.R](../02_clinical/02_preprocessing/source_0521/%E7%BA%B5%E5%90%91P1P99%E6%B8%85%E6%B4%97.R) — source_2/0521/代码/纵向P1P99清洗.R（60 行）
+- [02_clinical/02_preprocessing/source_0824/add_train_5fold_0826.py](../02_clinical/02_preprocessing/source_0824/add_train_5fold_0826.py) — source_2/0722/实例研究代码/代码/add_train_5fold_0826.py（92 行）
+- [02_clinical/02_preprocessing/source_0824/knn_impute_longitudinal_0824.R](../02_clinical/02_preprocessing/source_0824/knn_impute_longitudinal_0824.R) — source_2/0722/实例研究代码/代码/knn_impute_longitudinal_0824.R（402 行）
+- [02_clinical/03_models/individual_0826/cox/0826_COX_结果输出.R](../02_clinical/03_models/individual_0826/cox/0826_COX_%E7%BB%93%E6%9E%9C%E8%BE%93%E5%87%BA.R) — source_2/0722/实例研究代码/执行/0826_COX_结果输出.R（352 行）
+- [02_clinical/03_models/individual_0826/jm/0831_JM结果输出.R](../02_clinical/03_models/individual_0826/jm/0831_JM%E7%BB%93%E6%9E%9C%E8%BE%93%E5%87%BA.R) — source_2/0722/实例研究代码/执行/0831_JM结果输出.R（1345 行）
+- [02_clinical/03_models/individual_0826/rsf/0826_RSF_结果输出.R](../02_clinical/03_models/individual_0826/rsf/0826_RSF_%E7%BB%93%E6%9E%9C%E8%BE%93%E5%87%BA.R) — source_2/0722/实例研究代码/执行/0826_RSF_结果输出.R（723 行）
+- [02_clinical/03_models/individual_0826/rsflc/0827_RSFLC结果输出.R](../02_clinical/03_models/individual_0826/rsflc/0827_RSFLC%E7%BB%93%E6%9E%9C%E8%BE%93%E5%87%BA.R) — source_2/0722/实例研究代码/执行/0827_RSFLC结果输出.R（1418 行）
+- [02_clinical/03_models/individual_0826/support/0826_RSFLC超参数筛选.R](../02_clinical/03_models/individual_0826/support/0826_RSFLC%E8%B6%85%E5%8F%82%E6%95%B0%E7%AD%9B%E9%80%89.R) — source_2/0722/实例研究代码/执行/0826_RSFLC超参数筛选.R（568 行）
+- [02_clinical/03_models/individual_0826/support/0826_RSF_超参数筛选.R](../02_clinical/03_models/individual_0826/support/0826_RSF_%E8%B6%85%E5%8F%82%E6%95%B0%E7%AD%9B%E9%80%89.R) — source_2/0722/实例研究代码/执行/0826_RSF_超参数筛选.R（291 行）
+- [02_clinical/03_models/individual_0826/support/0827_JM_base.R](../02_clinical/03_models/individual_0826/support/0827_JM_base.R) — source_2/0722/实例研究代码/执行/0827_JM_base.R（1233 行）
+- [02_clinical/03_models/unified_pipeline/00_config.R](../02_clinical/03_models/unified_pipeline/00_config.R) — source_2/0830/CODEX/脚本/00_config.R（241 行）
+- [02_clinical/03_models/unified_pipeline/01_stage_inputs.R](../02_clinical/03_models/unified_pipeline/01_stage_inputs.R) — source_2/0830/CODEX/脚本/01_stage_inputs.R（39 行）
+- [02_clinical/03_models/unified_pipeline/02_prepare_data.R](../02_clinical/03_models/unified_pipeline/02_prepare_data.R) — source_2/0830/CODEX/脚本/02_prepare_data.R（137 行）
+- [02_clinical/03_models/unified_pipeline/03_descriptive_tables_and_flow.R](../02_clinical/03_models/unified_pipeline/03_descriptive_tables_and_flow.R) — source_2/0830/CODEX/脚本/03_descriptive_tables_and_flow.R（160 行）
+- [02_clinical/03_models/unified_pipeline/04_static_models.R](../02_clinical/03_models/unified_pipeline/04_static_models.R) — source_2/0830/CODEX/脚本/04_static_models.R（155 行）
+- [02_clinical/03_models/unified_pipeline/05_static_explain.R](../02_clinical/03_models/unified_pipeline/05_static_explain.R) — source_2/0830/CODEX/脚本/05_static_explain.R（199 行）
+- [02_clinical/03_models/unified_pipeline/06_rsflc_model.R](../02_clinical/03_models/unified_pipeline/06_rsflc_model.R) — source_2/0830/CODEX/脚本/06_rsflc_model.R（221 行）
+- [02_clinical/03_models/unified_pipeline/07a_rsf_fivefold_cv_optional.R](../02_clinical/03_models/unified_pipeline/07a_rsf_fivefold_cv_optional.R) — source_2/0830/CODEX/脚本/07a_rsf_fivefold_cv_optional.R（52 行）
+- [02_clinical/03_models/unified_pipeline/07b_rsflc_fivefold_cv_optional.R](../02_clinical/03_models/unified_pipeline/07b_rsflc_fivefold_cv_optional.R) — source_2/0830/CODEX/脚本/07b_rsflc_fivefold_cv_optional.R（72 行）
+- [02_clinical/03_models/unified_pipeline/08_joint_model.R](../02_clinical/03_models/unified_pipeline/08_joint_model.R) — source_2/0830/CODEX/脚本/08_joint_model.R（221 行）
+- [02_clinical/03_models/unified_pipeline/09_combine_results.R](../02_clinical/03_models/unified_pipeline/09_combine_results.R) — source_2/0830/CODEX/脚本/09_combine_results.R（120 行）
+- [02_clinical/03_models/unified_pipeline/10_build_docx.R](../02_clinical/03_models/unified_pipeline/10_build_docx.R) — source_2/0830/CODEX/脚本/10_build_docx.R（246 行）
+- [02_clinical/03_models/unified_pipeline/99_run_all.R](../02_clinical/03_models/unified_pipeline/99_run_all.R) — source_2/0830/CODEX/脚本/99_run_all.R（28 行）
+- [02_clinical/04_evaluation/alternative_dynamic_contract/JM_5_4B_corrected.R](../02_clinical/04_evaluation/alternative_dynamic_contract/JM_5_4B_corrected.R) — source_2/0830/结果/RSF5_4B/JM_5_4B_corrected.R（234 行）
+- [02_clinical/04_evaluation/alternative_dynamic_contract/RSFLC_5_4B_corrected.R](../02_clinical/04_evaluation/alternative_dynamic_contract/RSFLC_5_4B_corrected.R) — source_2/0830/结果/RSF5_4B/RSFLC_5_4B_corrected.R（182 行）
+- [02_clinical/04_evaluation/alternative_dynamic_contract/common_dynamic_metric_contract.R](../02_clinical/04_evaluation/alternative_dynamic_contract/common_dynamic_metric_contract.R) — source_2/0830/结果/RSF5_4B/common_dynamic_metric_contract.R（258 行）
+- [02_clinical/04_evaluation/alternative_dynamic_contract/rsflc_safe_predict.R](../02_clinical/04_evaluation/alternative_dynamic_contract/rsflc_safe_predict.R) — source_2/0830/结果/RSF5_4B/rsflc_safe_predict.R（123 行）
+- [02_clinical/04_evaluation/alternative_dynamic_contract/run_all_5_4B.R](../02_clinical/04_evaluation/alternative_dynamic_contract/run_all_5_4B.R) — source_2/0830/结果/RSF5_4B/run_all_5_4B.R（9 行）
+- [02_clinical/04_evaluation/alternative_static_contract/COX_5_4A_corrected.R](../02_clinical/04_evaluation/alternative_static_contract/COX_5_4A_corrected.R) — source_2/0830/结果/RSF5_4A/COX_5_4A_corrected.R（325 行）
+- [02_clinical/04_evaluation/alternative_static_contract/RSF_5_4A_corrected.R](../02_clinical/04_evaluation/alternative_static_contract/RSF_5_4A_corrected.R) — source_2/0830/结果/RSF5_4A/RSF_5_4A_corrected.R（611 行）
+- [02_clinical/04_evaluation/alternative_static_contract/run_COX_5_4A.R](../02_clinical/04_evaluation/alternative_static_contract/run_COX_5_4A.R) — source_2/0830/结果/RSF5_4A/run_COX_5_4A.R（4 行）
+- [02_clinical/04_evaluation/alternative_static_contract/unified_metric_contract.R](../02_clinical/04_evaluation/alternative_static_contract/unified_metric_contract.R) — source_2/0830/结果/RSF5_4A/unified_metric_contract.R（44 行）
+- [02_clinical/05_explanation/rsflc_shap/RSFLC_stroke_SHAP.py](../02_clinical/05_explanation/rsflc_shap/RSFLC_stroke_SHAP.py) — source_2/0722/pythonProject1/stroke_RSFLC_SHAP/RSFLC_stroke_SHAP.py（171 行）
+- [02_clinical/05_explanation/rsflc_shap/RSFLC_stroke_fit.R](../02_clinical/05_explanation/rsflc_shap/RSFLC_stroke_fit.R) — source_2/0722/pythonProject1/stroke_RSFLC_SHAP/RSFLC_stroke_fit.R（285 行）
+- [02_clinical/05_explanation/rsflc_shap/RSFLC_stroke_predict.R](../02_clinical/05_explanation/rsflc_shap/RSFLC_stroke_predict.R) — source_2/0722/pythonProject1/stroke_RSFLC_SHAP/RSFLC_stroke_predict.R（97 行）
+- [02_clinical/06_reporting/fig_ch5.py](../02_clinical/06_reporting/fig_ch5.py) — source_2/图片代码/图片代码/fig_ch5.py（72 行）
+- [02_clinical/06_reporting/update_article.py](../02_clinical/06_reporting/update_article.py) — source_2/0830/补充0831/代码/update_article.py（232 行）
+- [02_clinical/06_reporting/verify_article.py](../02_clinical/06_reporting/verify_article.py) — source_2/0830/补充0831/代码/verify_article.py（21 行）
