@@ -9,9 +9,9 @@
 - RSFLC 的纵向固定效应均为 `Y ~ time`。因 DynForest 1.3.2 对 `random = ~1` 触发内部错误，按预先允许的简化结构采用 `random = ~time`；其中 `time` 的数值仍为标准化时间 `u`。
 - 联合模型纵向子模型固定效应为 `Y ~ time_u`，随机效应为 `~1`。
 - 联合模型从 3 链、3,000 次迭代（预热 1,500 次）开始；若任一关联参数 `Rhat>1.05`，自动扩展至 6,000 次，再扩展至 12,000 次。若仍未收敛，结果保留但在正文中明确标为探索性。
-- RSF 使用文章既定参数：`ntree=500, mtry=3, nodesize=10, nsplit=10`。
-- RSFLC 使用文章既定参数：`ntree=200, mtry=3, nodesize=1, minsplit=2, nsplit_option=quantile`。
-- 五折超参数搜索代码保存在 `07a_rsf_fivefold_cv_optional.R` 与 `07b_rsflc_fivefold_cv_optional.R`，默认不运行。需要运行时设置环境变量 `RUN_OPTIONAL_CV=true`。
+- RSF 使用文章既定参数：`ntree=500, mtry=3, nodesize=10, nsplit=10`。对应网格为 `ntree∈{300,500,1000}`、`mtry∈{3,6,9}`、`nodesize∈{10,20,30,40}`、`nsplit∈{10,25,50}`，由 `07a_rsf_fivefold_cv_optional.R` 在 group=1 上五折选优。
+- RSFLC 使用文章既定参数：`ntree=200, mtry=3, nodesize=1, minsplit=2, nsplit_option=quantile`。对应网格为 `ntree∈{50,100,200}`、`mtry∈{3,6,9,12}`、`nodesize∈{1,3,5}`，`minsplit` 固定为 2，由 `07b_rsflc_fivefold_cv_optional.R` 在 group=1 上五折选优。
+- 五折超参数搜索默认不运行。需要运行时设置环境变量 `RUN_OPTIONAL_CV=true`。更早的完整原稿在 `../individual_0826/rsf/` 与 `../individual_0826/rsflc/`。
 
 ## 一键运行
 

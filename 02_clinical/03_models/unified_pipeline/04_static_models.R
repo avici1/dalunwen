@@ -133,6 +133,7 @@ md_tbl <- data.frame(variable = rownames(md_order), minimal_depth = md_order[, 1
   arrange(minimal_depth)
 write_utf8(md_tbl, file.path(artifact_dir, "RSF_\u6700\u5c0f\u6df1\u5ea6.csv"))
 
+# 表5-3A 写入的是文章已锁定的选参结果。重新网格搜索见 07a_rsf_fivefold_cv_optional.R。
 table_5_3a <- data.frame(
   model = "RSF",
   search_space = "ntree={300,500,1000}; mtry={3,6,9}; nodesize={10,20,30,40}; nsplit={10,25,50}",

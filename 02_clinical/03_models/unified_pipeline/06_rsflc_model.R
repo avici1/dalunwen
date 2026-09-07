@@ -125,6 +125,7 @@ write_utf8(transform(
   file.path(artifact_dir, "RSFLC_95CI_\u60a3\u8005\u7c07bootstrap.csv")
 )
 
+# 表5-3B 写入的是文章已锁定的选参结果。重新网格搜索见 07b_rsflc_fivefold_cv_optional.R。
 table_5_3b <- data.frame(
   model = "RSFLC",
   search_space = "ntree={50,100,200}; mtry={3,6,9,12}; nodesize={1,3,5}; fixed uL=5/28; nsplit_option=quantile",

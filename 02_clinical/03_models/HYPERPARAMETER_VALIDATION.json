@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-07",
+  "dry_run": {
+    "RSF": 108,
+    "RSFLC": 36
+  },
+  "synthetic_real_package_smoke": {
+    "subjects": 100,
+    "RSF": {
+      "grid_combinations": 1,
+      "ntree": 10,
+      "folds_passed": 5,
+      "refit_saved": true
+    },
+    "RSFLC": {
+      "grid_combinations": 1,
+      "ntree": 5,
+      "folds_passed": 5,
+      "refit_saved": true
+    }
+  },
+  "logic_checks": [
+    "incomplete folds excluded",
+    "training median",
+    "step function lookup",
+    "subject group/fold overlap",
+    "nonempty output guard"
+  ],
+  "real_patient_grid_executed": false,
+  "github_push_performed": false
+}

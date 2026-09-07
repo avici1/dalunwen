@@ -1,0 +1,72 @@
+{
+  "original_copies": [
+    {
+      "original_path": "F:\\文章_大论文\\0722\\实例研究代码\\执行\\0826_RSF_超参数筛选.R",
+      "repository_path": "02_clinical/03_models/rsf/source_versions/0826_RSF_超参数筛选.R",
+      "sha256": "9e6a93402aca290f4b858f6bae48ccebdbb0726797999bd7dd71a8e8e322ad3c",
+      "mode": "byte_identical_copy"
+    },
+    {
+      "original_path": "F:\\文章_大论文\\0722\\实例研究代码\\5折RSF\\RSF_tune_fold5.R",
+      "repository_path": "02_clinical/03_models/rsf/source_versions/RSF_tune_fold5.R",
+      "sha256": "fd0a36361332d5f8cef14fc1ea0b9c5cca10e758dca344d0a8e8984e6454332c",
+      "mode": "byte_identical_copy"
+    },
+    {
+      "original_path": "F:\\文章_大论文\\0722\\实例研究代码\\5折RSF\\RSF最优模型输出结果.R",
+      "repository_path": "02_clinical/03_models/rsf/source_versions/RSF最优模型输出结果.R",
+      "sha256": "98c0b5f68ddd66d0e207c5b598855c0b0d67b747da4459e9c27b7cd8717c9052",
+      "mode": "byte_identical_copy"
+    },
+    {
+      "original_path": "F:\\文章_大论文\\0830\\代码\\0830_RSF_表5-3A_五折交叉验证调参.R",
+      "repository_path": "02_clinical/03_models/rsf/source_versions/0830_RSF_表5-3A_五折交叉验证调参.R",
+      "sha256": "338b35d72b7ed7e73c3f43b3d761dc84fad81512df7fe1d2212d355ff8949b92",
+      "mode": "byte_identical_copy"
+    },
+    {
+      "original_path": "F:\\文章_大论文\\0521\\代码\\5折交叉验证RSF.R",
+      "repository_path": "02_clinical/03_models/rsf/source_versions/5折交叉验证RSF.R",
+      "sha256": "6b3e8ad68049470cae8e52e828823c4a535e53cef665ea817ec447de05c45a32",
+      "mode": "byte_identical_copy"
+    },
+    {
+      "original_path": "F:\\文章_大论文\\0722\\实例研究代码\\执行\\0826_RSFLC超参数筛选.R",
+      "repository_path": "02_clinical/03_models/rsflc/source_versions/0826_RSFLC超参数筛选.R",
+      "sha256": "d17f676c84e3e728a147ec4e613cde96279379aa8186e9b39d5d638fca768f4e",
+      "mode": "byte_identical_copy"
+    },
+    {
+      "original_path": "F:\\文章_大论文\\0722\\实例研究代码\\5折RSFLC\\RSFLC_20V_tune_fold5.R",
+      "repository_path": "02_clinical/03_models/rsflc/source_versions/RSFLC_20V_tune_fold5.R",
+      "sha256": "44f65bc7bee5d9a87bcdcb6191f3b83750685a6b15a07c9f6f941024f0db3282",
+      "mode": "byte_identical_copy"
+    },
+    {
+      "original_path": "F:\\文章_大论文\\0722\\实例研究代码\\5折RSFLC\\RSFLC最优模型输出结果.R",
+      "repository_path": "02_clinical/03_models/rsflc/source_versions/RSFLC最优模型输出结果.R",
+      "sha256": "50948ae612b82cde8a1b23457d532fb728f83db4d5eaf7c68bb217bb02c2610b",
+      "mode": "byte_identical_copy"
+    },
+    {
+      "original_path": "F:\\文章_大论文\\0521\\代码\\5折交叉验证RSF_LC.R",
+      "repository_path": "02_clinical/03_models/rsflc/source_versions/5折交叉验证RSF_LC.R",
+      "sha256": "ff6bae137a2a3f555952a33f726e1467caf8d75415926e8458aa78b1ccd58466",
+      "mode": "byte_identical_copy"
+    }
+  ],
+  "added_files": [
+    "hyperparameter_common.R",
+    "rsf/01_tune_and_refit.R",
+    "rsflc/01_tune_and_refit.R"
+  ],
+  "adapted_from": [
+    "unified_pipeline/07a_rsf_fivefold_cv_optional.R",
+    "unified_pipeline/07b_rsflc_fivefold_cv_optional.R",
+    "unified_pipeline/00_config.R",
+    "RSF/0830 fivefold full-refit pattern"
+  ],
+  "unchanged": "Original research scripts and unified_pipeline are not overwritten.",
+  "changes": "Complete-fold selection, fold-local remaining-missing imputation, stepwise time lookup, strict prediction ID alignment, final training-only refit, parameter/model export.",
+  "scope": "New entries reuse prepared cache files; they do not recreate raw-data KNN imputation or automatically replace report pipeline models."
+}

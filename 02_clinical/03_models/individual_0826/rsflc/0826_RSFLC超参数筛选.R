@@ -5,8 +5,10 @@
 # 按验证集 C-index 选优
 # 与 0826_RSFLC结果输出.R 共用同一套纵向定义、划分与混合模型设定
 #
-# 注意：本脚本用外验证集选参。完整五折见 ../rsflc/RSFLC_20V_tune_fold5.R
-# 文章最终口径五折见 ../../unified_pipeline/07b_rsflc_fivefold_cv_optional.R
+# 注意：本脚本用外验证集选参。完整五折网格（不用 group=2）见同目录：
+#   RSFLC_20V_tune_fold5.R
+# 文章最终口径（3 条轨迹 + 28 个固定变量）的五折搜索见：
+#   ../../unified_pipeline/07b_rsflc_fivefold_cv_optional.R
 # =============================================================================
 library(dplyr)
 library(survival)

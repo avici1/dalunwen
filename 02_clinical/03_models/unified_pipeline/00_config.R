@@ -51,7 +51,8 @@ factor_vars <- c("mechvent", "electivesurgery", "gender", "stroke_type")
 
 stopifnot(length(static31) == 31L, length(dynamic_fixed28) == 28L, length(traj3) == 3L)
 
-# Current-article model hyperparameters. Optional CV scripts do not run by default.
+# Locked hyperparameters used by 04_static_models.R / 06_rsflc_model.R.
+# Search grids are used by 07a / 07b (group=1 five-fold only; default off).
 rsf_par <- list(ntree = 500L, mtry = 3L, nodesize = 10L, nsplit = 10L)
 rsflc_par <- list(ntree = 200L, mtry = 3L, nodesize = 1L, minsplit = 2L)
 jm_par <- list(n_chains = 3L, n_iter = 3000L, n_burnin = 1500L)

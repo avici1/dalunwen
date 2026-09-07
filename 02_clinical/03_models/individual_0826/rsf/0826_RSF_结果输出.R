@@ -29,6 +29,7 @@ fig_dir <- file.path(out_dir, "图像_RSF")
 dir.create(fig_dir, showWarnings = FALSE, recursive = TRUE)
 
 # combo 2：ntree=500, mtry=3, nodesize=10, nsplit=10
+# 该组合来自 0826_RSF_超参数筛选.R / 表5-3A 五折搜索后锁定，本脚本不再搜网格。
 best_ntree <- 500
 best_mtry <- 3
 best_nodesize <- 10

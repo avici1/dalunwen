@@ -1,9 +1,7 @@
 # =============================================================================
-# RSFLC 最优模型结果输出（20 条纵向轨迹 + 11 个基线协变量）
-# 纵向：stroke_longitudinal_knn_0824_group_fold.csv
-# 划分以该文件 group 列为准：group=1 全体训练，group=2（约 30%）外验证
-# 与 0826_RSFLC超参数筛选.R 共用同一套纵向定义、划分与混合模型设定
-# 超参写死为已选定组合，不再读取调参结果
+# RSFLC 最优模型输出：可独立 source
+# 数据读入、工具函数、group=1 训练 / group=2 验证 与 RSFLC_baseline_0825 同款
+# 其后为 combo 3（20 轨迹 + 11 基线）最终拟合与 8 项结果
 # =============================================================================
 library(dplyr)
 library(survival)
@@ -21,35 +19,23 @@ library(officer)
 library(flextable)
 
 # ---------------------------------------------------------------------------
-# 开关与设定
+# 开关与设定（与 RSFLC_baseline_0825 同款）
 # ---------------------------------------------------------------------------
 RUN_SHAP <- TRUE
 
 t0 <- 5
+times_max <- 10
 seed_value <- 2026L
 evaluation_horizon <- 28 - 1e-04
 evaluation_times <- unique(c(seq(0, 27.5, by = 0.5), evaluation_horizon))
 ncores_use <- 8L
 
-# 已选择最优超参数组合（来自 0826_RSFLC超参数筛选.R / 表5-3B 五折搜索后锁定）
-best_ntree <- 200L
-best_mtry <- 3L
-best_nodesize <- 1L
-
 base_dir <- "F:/文章_大论文/0722/实例研究代码"
-out_dir <- file.path(base_dir, "执行")
-dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
-baseline_path <- file.path(base_dir, "stroke_baseline_knn_0824_fold.csv")
-longitudinal_path <- file.path(base_dir, "stroke_longitudinal_knn_0824_group_fold.csv")
-fig_dir <- file.path(out_dir, "图像_RSFLC")
+baseline_path <- file.path(base_dir, "stroke_baseline_knn_0824.csv")
+longitudinal_path <- file.path(base_dir, "stroke_longitudinal_knn_0824.csv")
+fig_dir <- file.path(base_dir, "图像_RSFLC")
 dir.create(fig_dir, showWarnings = FALSE, recursive = TRUE)
 
-long_vars <- c(
-  "total_urine_output", "creat", "aki_stage", "gcs", "ph", "pco2",
-  "lactate", "po2", "pao2fio2ratio", "glucose", "sodium", "bicarbonate",
-  "hemoglobin", "temperature", "fio2", "sofa_24hours", "cns_24hours",
-  "renal_24hours", "cardiovascular_24hours", "respiration_24hours"
-)
 fixed_covars <- c(
   "age", "charlson_comorbidity_index", "apsiii", "sapsii", "oasis",
   "preiculos", "mechvent", "electivesurgery", "gender", "bmi", "stroke_type"
@@ -57,11 +43,8 @@ fixed_covars <- c(
 factor_covars <- c("mechvent", "electivesurgery", "gender", "stroke_type")
 numeric_covars <- setdiff(fixed_covars, factor_covars)
 
-timeVarModel_20 <- stats::setNames(
-  lapply(long_vars, function(v) {
-    list(fixed = stats::as.formula(paste(v, "~ 1")), random = ~ time)
-  }),
-  long_vars
+timeVarModel_gcs <- list(
+  gcs = list(fixed = gcs ~ 1, random = ~ time)
 )
 
 # ---------------------------------------------------------------------------
@@ -107,7 +90,7 @@ fit_dynforest <- function(timeData, fixedData, y_df, ntree, mtry, nodesize, ncor
     fixedData     = fixedData,
     timeVar       = "time",
     idVar         = "hadm_id",
-    timeVarModel  = timeVarModel_20,
+    timeVarModel  = timeVarModel_gcs,
     Y             = list(type = "factor", Y = y_df),
     mtry          = as.integer(mtry),
     nodesize      = as.integer(nodesize),
@@ -119,48 +102,7 @@ fit_dynforest <- function(timeData, fixedData, y_df, ntree, mtry, nodesize, ncor
   ))
 }
 
-as_dead_num <- function(y) {
-  if (is.null(y)) {
-    return(numeric(0))
-  }
-  if (is.factor(y)) {
-    lev <- levels(y)
-    if ("dead" %in% lev) {
-      return(as.numeric(y == "dead"))
-    }
-    if (length(lev) >= 2L) {
-      return(as.numeric(y == lev[length(lev)]))
-    }
-    return(as.numeric(as.integer(y) == max(as.integer(y), na.rm = TRUE)))
-  }
-  y_chr <- as.character(y)
-  out <- rep(NA_real_, length(y_chr))
-  out[y_chr %in% c("dead", "Dead", "TRUE", "true")] <- 1
-  out[y_chr %in% c("alive", "Alive", "FALSE", "false")] <- 0
-  num <- suppressWarnings(as.numeric(y_chr))
-  fill <- is.na(out) & is.finite(num)
-  out[fill] <- as.numeric(num[fill] > 0)
-  out
-}
-
-leaf_death_rate <- function(tree) {
-  if (is.null(tree$leaves) || is.null(tree$idY) || is.null(tree$Y$Y) || is.null(tree$Y$id)) {
-    return(NULL)
-  }
-  y_boot <- tree$Y$Y[match(tree$idY, tree$Y$id)]
-  dead <- as_dead_num(y_boot)
-  leaves <- as.character(tree$leaves)
-  ok <- !is.na(leaves) & leaves != "0" & !is.na(dead)
-  if (!any(ok)) {
-    return(NULL)
-  }
-  tapply(dead[ok], leaves[ok], mean)
-}
-
-# DynForest 分类叶子存的是多数票（稀有事件下几乎全是 alive）。
-# predict() 又把类别写入数值矩阵，未赋值的 0 会变成字符 "0"，
-# 再用 1-proba 会得到全 0。这里改用各叶子的实际死亡率。
-predict_prob_dead <- function(model, timeData, fixedData, t0_value = t0, verbose = FALSE) {
+predict_prob_dead <- function(model, timeData, fixedData, t0_value = t0) {
   time_var <- if (!is.null(model$timeVar)) model$timeVar else "time"
   pred_dyn <- predict(
     object    = model,
@@ -170,66 +112,18 @@ predict_prob_dead <- function(model, timeData, fixedData, t0_value = t0, verbose
     timeVar   = time_var,
     t0        = t0_value
   )
-
-  pred_leaf <- pred_dyn$pred_leaf
-  ids <- as.integer(names(pred_dyn$pred_indiv))
-  probability <- NULL
-
-  if (!is.null(pred_leaf) && !is.null(model$rf)) {
-    n_tree <- ncol(model$rf)
-    if (ncol(pred_leaf) == n_tree && nrow(pred_leaf) != n_tree) {
-      pred_leaf <- t(pred_leaf)
-    }
-    n_id <- ncol(pred_leaf)
-    if (length(ids) != n_id) {
-      ids <- as.integer(unique(fixedData$hadm_id))
-      if (length(ids) != n_id) {
-        ids <- seq_len(n_id)
-      }
-    }
-    pmat <- matrix(NA_real_, n_tree, n_id)
-    for (t in seq_len(n_tree)) {
-      rates <- leaf_death_rate(model$rf[, t])
-      if (is.null(rates) || length(rates) == 0) {
-        next
-      }
-      pmat[t, ] <- unname(rates[as.character(pred_leaf[t, ])])
-    }
-    probability <- colMeans(pmat, na.rm = TRUE)
-    probability[!is.finite(probability)] <- NA_real_
+  dead_label <- if (!is.null(model$levels) && "dead" %in% model$levels) {
+    "dead"
+  } else if (!is.null(model$levels)) {
+    model$levels[length(model$levels)]
+  } else {
+    "dead"
   }
-
-  if (is.null(probability) || all(!is.finite(probability))) {
-    dead_label <- if (!is.null(model$levels) && "dead" %in% model$levels) {
-      "dead"
-    } else if (!is.null(model$levels)) {
-      model$levels[length(model$levels)]
-    } else {
-      "dead"
-    }
-    pred_class <- as.character(unname(pred_dyn$pred_indiv))
-    pred_class[pred_class %in% c("0", "NA")] <- NA_character_
-    proba <- as.numeric(unname(pred_dyn$pred_indiv_proba))
-    ids <- as.integer(names(pred_dyn$pred_indiv))
-    probability <- ifelse(pred_class == dead_label, proba, 1 - proba)
-  }
-
-  if (isTRUE(verbose)) {
-    okp <- is.finite(probability)
-    cat(sprintf(
-      "死亡概率: n=%d | min=%.4f median=%.4f max=%.4f | 唯一值个数=%d\n",
-      sum(okp),
-      if (any(okp)) min(probability[okp]) else NA_real_,
-      if (any(okp)) stats::median(probability[okp]) else NA_real_,
-      if (any(okp)) max(probability[okp]) else NA_real_,
-      length(unique(round(probability[okp], 6)))
-    ))
-    flush.console()
-  }
-
+  pred_class <- unname(pred_dyn$pred_indiv)
+  proba <- as.numeric(unname(pred_dyn$pred_indiv_proba))
   data.frame(
-    hadm_id = ids,
-    probability = as.numeric(probability),
+    hadm_id = as.integer(names(pred_dyn$pred_indiv)),
+    probability = ifelse(pred_class == dead_label, proba, 1 - proba),
     stringsAsFactors = FALSE
   )
 }
@@ -298,25 +192,9 @@ extract_score_at_horizon <- function(score_obj, model_name, horizon) {
   )
 }
 
-permute_long_marker <- function(time_data, marker) {
-  split_time <- split(time_data, time_data$hadm_id)
-  perm_ids <- sample(names(split_time))
-  time_perm_list <- lapply(seq_along(split_time), function(i) {
-    dst <- split_time[[i]]
-    src <- split_time[[perm_ids[i]]]
-    n_dst <- nrow(dst)
-    n_src <- nrow(src)
-    dst[[marker]] <- src[[marker]][rep_len(seq_len(n_src), n_dst)]
-    dst
-  })
-  out <- do.call(rbind, time_perm_list)
-  rownames(out) <- NULL
-  out
-}
-
 permutation_vimp_fallback <- function(
   model, time_data, fixed_data, outcome_df,
-  long_names, numeric_names, factor_names, seed = 2026L
+  numeric_names, factor_names, seed = 2026L
 ) {
   set.seed(seed)
   base_pred <- predict_prob_dead(model, time_data, fixed_data, t0)
@@ -324,17 +202,26 @@ permutation_vimp_fallback <- function(
   base_err <- 1 - base_metrics$cindex
   rows <- list()
 
-  for (nm in long_names) {
-    time_perm <- permute_long_marker(time_data, nm)
-    pred_i <- tryCatch(
-      predict_prob_dead(model, time_perm, fixed_data, t0),
-      error = function(e) NULL
-    )
-    if (is.null(pred_i)) next
-    err_i <- 1 - eval_metrics(pred_i, outcome_df)$cindex
+  split_time <- split(time_data, time_data$hadm_id)
+  perm_ids <- sample(names(split_time))
+  time_perm_list <- lapply(seq_along(split_time), function(i) {
+    src <- split_time[[perm_ids[i]]]
+    dst_id <- as.integer(names(split_time)[i])
+    out_i <- src
+    out_i$hadm_id <- dst_id
+    out_i
+  })
+  time_perm <- do.call(rbind, time_perm_list)
+  rownames(time_perm) <- NULL
+  pred_gcs <- tryCatch(
+    predict_prob_dead(model, time_perm, fixed_data, t0),
+    error = function(e) NULL
+  )
+  if (!is.null(pred_gcs)) {
+    err_gcs <- 1 - eval_metrics(pred_gcs, outcome_df)$cindex
     rows[[length(rows) + 1]] <- data.frame(
-      variable = nm,
-      importance = as.numeric(err_i - base_err),
+      variable = "gcs",
+      importance = as.numeric(err_gcs - base_err),
       group = "Longitudinal",
       stringsAsFactors = FALSE
     )
@@ -446,8 +333,7 @@ make_shap_pred_wrapper <- function(time_i, template_fixed, t0_value = t0) {
 }
 
 # ---------------------------------------------------------------------------
-# 读数：数据已预先处理好，此处只做格式转换与 ID 对齐
-# 划分以纵向表 group 列为准（不用 fold）
+# 读数与整理（与 RSFLC_baseline_0825 同款）
 # ---------------------------------------------------------------------------
 stroke_baseline <- read.csv(
   baseline_path,
@@ -462,35 +348,20 @@ stroke_longitudinal <- read.csv(
   fileEncoding = "UTF-8"
 )
 
-miss_long <- setdiff(long_vars, names(stroke_longitudinal))
-if (length(miss_long) > 0) {
-  stop("纵向数据缺少列: ", paste(miss_long, collapse = ", "))
-}
-if (!"group" %in% names(stroke_longitudinal)) {
-  stop("纵向数据缺少 group 列: ", longitudinal_path)
-}
-
-long_group <- stroke_longitudinal %>%
-  dplyr::transmute(
-    hadm_id = as.integer(.data$hadm_id),
-    group = as.integer(.data$group)
-  ) %>%
-  dplyr::filter(!is.na(.data$hadm_id), .data$group %in% c(1L, 2L)) %>%
-  dplyr::distinct(.data$hadm_id, .data$group)
-dup_group <- long_group %>%
-  dplyr::count(.data$hadm_id) %>%
-  dplyr::filter(.data$n > 1L)
-if (nrow(dup_group) > 0) {
-  stop("纵向数据中存在同一 hadm_id 对应多个 group")
-}
-
 timeData_all <- stroke_longitudinal %>%
+  dplyr::filter(.data$times <= times_max) %>%
   dplyr::transmute(
     hadm_id = as.integer(.data$hadm_id),
     time = as.integer(.data$times),
-    dplyr::across(dplyr::all_of(long_vars), as.numeric)
+    gcs = as.numeric(.data$gcs)
   ) %>%
+  dplyr::filter(is.finite(.data$gcs)) %>%
+  dplyr::group_by(.data$hadm_id) %>%
+  dplyr::filter(dplyr::n() >= 2) %>%
+  dplyr::ungroup() %>%
   as.data.frame()
+
+valid_ids <- unique(timeData_all$hadm_id)
 
 baseline_all <- stroke_baseline %>%
   dplyr::transmute(
@@ -506,22 +377,30 @@ baseline_all <- stroke_baseline %>%
     gender = factor(.data$gender),
     bmi = as.numeric(.data$bmi),
     stroke_type = factor(.data$stroke_type),
+    group = as.integer(.data$group),
     intime = as.POSIXct(.data$intime, format = "%d/%m/%Y %H:%M:%S"),
     deathtime = as.POSIXct(.data$deathtime, format = "%d/%m/%Y %H:%M:%S"),
     death_28d = as.integer(.data$death_28d)
   ) %>%
-  dplyr::inner_join(long_group, by = "hadm_id") %>%
   dplyr::mutate(
     time28 = as.numeric(difftime(.data$deathtime, .data$intime, units = "days")),
     time28 = ifelse(is.na(.data$time28), 28, pmin(.data$time28, 28)),
     status28 = as.integer(.data$death_28d == 1)
   ) %>%
+  dplyr::filter(
+    .data$hadm_id %in% valid_ids,
+    .data$time28 > 0,
+    !is.na(.data$status28),
+    .data$group %in% c(1L, 2L)
+  ) %>%
   dplyr::distinct(.data$hadm_id, .keep_all = TRUE) %>%
   as.data.frame()
 
-ids_both <- intersect(unique(timeData_all$hadm_id), unique(baseline_all$hadm_id))
-timeData_all <- timeData_all[timeData_all$hadm_id %in% ids_both, , drop = FALSE]
-baseline_all <- baseline_all[baseline_all$hadm_id %in% ids_both, , drop = FALSE]
+keep_ids <- unique(baseline_all$hadm_id)
+timeData_all <- timeData_all[timeData_all$hadm_id %in% keep_ids, , drop = FALSE]
+keep_ids <- intersect(unique(timeData_all$hadm_id), keep_ids)
+baseline_all <- baseline_all[baseline_all$hadm_id %in% keep_ids, , drop = FALSE]
+timeData_all <- timeData_all[timeData_all$hadm_id %in% keep_ids, , drop = FALSE]
 
 fixedData_all <- baseline_all[, c("hadm_id", fixed_covars), drop = FALSE]
 y_all <- baseline_all %>%
@@ -534,66 +413,107 @@ outcome_all <- baseline_all[, c("hadm_id", "time28", "status28", "death_28d"), d
 
 stopifnot(
   identical(sort(unique(timeData_all$hadm_id)), sort(fixedData_all$hadm_id)),
-  identical(sort(fixedData_all$hadm_id), sort(y_all$hadm_id))
+  identical(sort(fixedData_all$hadm_id), sort(y_all$hadm_id)),
+  sum(is.na(timeData_all$gcs)) == 0
 )
 
 cat(
-  "患者 n =", nrow(fixedData_all),
+  "合格患者 n =", nrow(fixedData_all),
   "| 纵向行数 =", nrow(timeData_all),
   "| 28d 死亡率 =", round(mean(outcome_all$status28), 3), "\n"
 )
 flush.console()
 
 # ---------------------------------------------------------------------------
-# 划分：纵向表 group=1 全体训练；group=2（约 30%）验证
+# 使用数据中已有分组：group=1 训练（70%），group=2 测试（30%）
 # ---------------------------------------------------------------------------
 stopifnot("group" %in% names(baseline_all))
 train_ids <- sort(unique(baseline_all$hadm_id[baseline_all$group == 1L]))
 test_ids <- sort(unique(baseline_all$hadm_id[baseline_all$group == 2L]))
 stopifnot(length(train_ids) > 0L, length(test_ids) > 0L)
-stopifnot(length(intersect(train_ids, test_ids)) == 0L)
 
-train_raw <- subset_by_ids(timeData_all, fixedData_all, y_all, outcome_all, train_ids)
-test_raw <- subset_by_ids(timeData_all, fixedData_all, y_all, outcome_all, test_ids)
-train_template <- train_raw$fixedData[, fixed_covars, drop = FALSE]
-train_fixed <- train_raw$fixedData
-train_fixed[, fixed_covars] <- fill_missing_like_train(
-  train_fixed[, fixed_covars, drop = FALSE],
-  train_template
+cat(
+  "训练集 n =", length(train_ids),
+  "| 验证集 n =", length(test_ids), "\n"
 )
-test_fixed <- test_raw$fixedData
-test_fixed[, fixed_covars] <- fill_missing_like_train(
-  test_fixed[, fixed_covars, drop = FALSE],
-  train_fixed[, fixed_covars, drop = FALSE]
+flush.console()
+
+# ---------------------------------------------------------------------------
+# 最终模型：combo 3；纵向改为与试运行/五折相同的 20 条轨迹
+# 基线仍为原来的 11 个固定协变量。全部 group=1 拟合，group=2 外验证。
+# ---------------------------------------------------------------------------
+
+long_vars <- c(
+  "total_urine_output", "creat", "aki_stage", "gcs", "ph", "pco2",
+  "lactate", "po2", "pao2fio2ratio", "glucose", "sodium", "bicarbonate",
+  "hemoglobin", "temperature", "fio2", "sofa_24hours", "cns_24hours",
+  "renal_24hours", "cardiovascular_24hours", "respiration_24hours"
+)
+miss_long <- setdiff(long_vars, names(stroke_longitudinal))
+if (length(miss_long) > 0) {
+  stop("纵向数据缺少列: ", paste(miss_long, collapse = ", "))
+}
+
+timeData_20 <- stroke_longitudinal %>%
+  dplyr::filter(.data$times <= times_max) %>%
+  dplyr::transmute(
+    hadm_id = as.integer(.data$hadm_id),
+    time = as.integer(.data$times),
+    dplyr::across(dplyr::all_of(long_vars), as.numeric)
+  ) %>%
+  dplyr::filter(dplyr::if_all(dplyr::all_of(long_vars), is.finite)) %>%
+  dplyr::group_by(.data$hadm_id) %>%
+  dplyr::filter(dplyr::n() >= 2) %>%
+  dplyr::ungroup() %>%
+  as.data.frame()
+
+ids_20 <- unique(timeData_20$hadm_id)
+train_ids_20 <- sort(intersect(train_ids, ids_20))
+test_ids_20 <- sort(intersect(test_ids, ids_20))
+stopifnot(length(train_ids_20) > 0L, length(test_ids_20) > 0L)
+
+train_raw_20 <- subset_by_ids(timeData_20, fixedData_all, y_all, outcome_all, train_ids_20)
+test_raw_20 <- subset_by_ids(timeData_20, fixedData_all, y_all, outcome_all, test_ids_20)
+train_template_20 <- train_raw_20$fixedData[, fixed_covars, drop = FALSE]
+train_fixed_20 <- train_raw_20$fixedData
+train_fixed_20[, fixed_covars] <- fill_missing_like_train(
+  train_fixed_20[, fixed_covars, drop = FALSE],
+  train_template_20
+)
+test_fixed_20 <- test_raw_20$fixedData
+test_fixed_20[, fixed_covars] <- fill_missing_like_train(
+  test_fixed_20[, fixed_covars, drop = FALSE],
+  train_fixed_20[, fixed_covars, drop = FALSE]
 )
 train_pack <- list(
-  timeData = train_raw$timeData,
-  fixedData = train_fixed,
-  y_df = train_raw$y_df,
-  outcome = train_raw$outcome
+  timeData = train_raw_20$timeData,
+  fixedData = train_fixed_20,
+  y_df = train_raw_20$y_df,
+  outcome = train_raw_20$outcome
 )
 test_pack <- list(
-  timeData = test_raw$timeData,
-  fixedData = test_fixed,
-  y_df = test_raw$y_df,
-  outcome = test_raw$outcome
+  timeData = test_raw_20$timeData,
+  fixedData = test_fixed_20,
+  y_df = test_raw_20$y_df,
+  outcome = test_raw_20$outcome
 )
 
-p_mtry <- length(long_vars) + length(fixed_covars)
-n_train_dead <- sum(train_pack$outcome$status28 == 1L)
-n_test_dead <- sum(test_pack$outcome$status28 == 1L)
+timeVarModel_gcs <- stats::setNames(
+  lapply(long_vars, function(v) {
+    list(fixed = stats::as.formula(paste(v, "~ 1")), random = ~ time)
+  }),
+  long_vars
+)
+
+best_ntree <- 200L
+best_mtry <- 3L
+best_nodesize <- 1L
+
 cat(sprintf(
-  paste0(
-    "数据: %s | 划分: group=1 全体训练，group=2 验证\n",
-    "最优超参 ntree=%d mtry=%d nodesize=%d | 20轨迹+11基线 p=%d\n",
-    "训练集 n=%d 死亡=%d (%.1f%%) | 验证集 n=%d 死亡=%d (%.1f%%)\n"
-  ),
-  basename(longitudinal_path),
-  best_ntree, best_mtry, best_nodesize, p_mtry,
-  nrow(train_pack$fixedData), n_train_dead,
-  100 * mean(train_pack$outcome$status28),
-  nrow(test_pack$fixedData), n_test_dead,
-  100 * mean(test_pack$outcome$status28)
+  "指定最优超参 ntree=%d mtry=%d nodesize=%d | 20轨迹+11基线 | 训练集 n=%d | 验证集 n=%d\n",
+  best_ntree, best_mtry, best_nodesize,
+  nrow(train_pack$fixedData),
+  nrow(test_pack$fixedData)
 ))
 flush.console()
 
@@ -608,19 +528,16 @@ dyn_model <- fit_dynforest(
   seed = seed_value
 )
 attr(dyn_model, "model_name") <- "RSFLC"
-cat("拟合模型摘要:\n")
-print(dyn_model)
-flush.console()
 
 test_pred <- predict_prob_dead(
   dyn_model,
   test_pack$timeData,
   test_pack$fixedData,
-  t0,
-  verbose = TRUE
+  t0
 )
 test_metrics <- eval_metrics(test_pred, test_pack$outcome)
 test_eval <- test_metrics$data
+test_probability <- test_eval$probability
 
 cat(sprintf(
   "验证集 n=%d | C-index=%.4f | AUC28=%.4f | Brier28=%.4f\n",
@@ -632,10 +549,12 @@ cat(sprintf(
 flush.console()
 
 # ---------------------------------------------------------------------------
-# OOB + IPCW 性能表
+# OOB + IPCW 性能表（对齐 RSF 报告口径）
 # ---------------------------------------------------------------------------
 cat("计算最终模型 OOB C-index...\n")
 flush.console()
+# 注意：compute_ooberror 返回 class=dynforestoob，且 is(dynforest)=FALSE；
+# 不可写回 dyn_model，否则后续 compute_vimp / predict 都会失败。
 oob_cindex <- tryCatch({
   oob_obj <- DynForest::compute_ooberror(dyn_model, ncores = 1L)
   1 - mean(as.numeric(oob_obj$oob.err), na.rm = TRUE)
@@ -695,6 +614,8 @@ test_rsflc_score <- riskRegression::Score(
 train_score_vals <- extract_score_at_horizon(train_rsflc_score, "RSFLC", evaluation_horizon)
 test_score_vals <- extract_score_at_horizon(test_rsflc_score, "RSFLC", evaluation_horizon)
 
+# 训练集 C-index 用 OOB；测试集用留出 C-index
+# AUC 优先用 Score 时间依赖 AUC；若 NA 则回退 pROC
 train_auc_28 <- if (is.finite(train_score_vals$auc)) train_score_vals$auc else train_metrics$auc
 test_auc_28 <- if (is.finite(test_score_vals$auc)) test_score_vals$auc else test_metrics$auc
 train_brier_28_ipcw <- train_score_vals$brier
@@ -745,140 +666,26 @@ print(performance_table, row.names = FALSE)
 flush.console()
 
 # ---------------------------------------------------------------------------
-# 01 VIMP：可单独选中运行（用全局 dyn_model / test_pack，不重新拟合）
-# 轨迹列以会话为准（优先 traj_vars，否则从 timeData 推断），避免磁盘上的 20 轨迹名单
+# 01 VIMP
+# DynForest::compute_vimp 在 Windows 上即便 ncores=1 仍走 PSOCK+foreach，
+# 置换阶段 OOB.tree 常得到全 NaN Importance（已用小样本复现）。
+# 因此默认直接使用基于 predict 的置换重要性，不换其他 R 包。
 # ---------------------------------------------------------------------------
-if (!exists("dyn_model")) {
-  stop("找不到 dyn_model。请在已拟合的同一 R 会话中运行本段，不要从头 source 整份脚本。")
-}
-if (!exists("test_pack")) {
-  stop("找不到 test_pack。请在读数/划分之后的同一会话中运行本段。")
-}
-if (!exists("predict_prob_dead") || !exists("eval_metrics") || !exists("permute_long_marker")) {
-  stop("找不到 predict_prob_dead / eval_metrics / permute_long_marker。请在原会话运行，不要清环境。")
-}
-if (!exists("t0")) t0 <- 5
-if (!exists("seed_value")) seed_value <- 2026L
-if (!exists("fig_dir")) {
-  fig_dir <- "F:/文章_大论文/0722/实例研究代码/执行/图像_RSFLC"
-}
-dir.create(fig_dir, showWarnings = FALSE, recursive = TRUE)
-
-vimp_long_names <- if (exists("traj_vars")) {
-  as.character(traj_vars)
-} else {
-  setdiff(names(test_pack$timeData), c("hadm_id", "time", "times"))
-}
-vimp_fixed_names <- setdiff(names(test_pack$fixedData), "hadm_id")
-vimp_factor_names <- if (exists("factor_covars")) {
-  intersect(as.character(factor_covars), vimp_fixed_names)
-} else {
-  vimp_fixed_names[vapply(test_pack$fixedData[vimp_fixed_names], is.factor, logical(1))]
-}
-vimp_numeric_names <- if (exists("numeric_covars")) {
-  intersect(as.character(numeric_covars), vimp_fixed_names)
-} else {
-  setdiff(vimp_fixed_names, vimp_factor_names)
-}
-vimp_long_names <- intersect(vimp_long_names, names(test_pack$timeData))
-stopifnot(length(vimp_long_names) > 0L)
-
-vimp_job_names <- c(
-  vimp_long_names,
-  vimp_numeric_names,
-  vimp_factor_names
-)
-vimp_n_job <- length(vimp_job_names)
+set.seed(seed_value)
 vimp_file <- file.path(fig_dir, "01_VIMP.png")
 
-cat(sprintf(
-  "计算置换 VIMP（不重新拟合）：%d 条轨迹 + %d 个固定协变量，共 %d 次预测\n",
-  length(vimp_long_names),
-  length(vimp_numeric_names) + length(vimp_factor_names),
-  vimp_n_job + 1L
-))
+cat("计算置换 VIMP（predict 兜底，跳过 DynForest::compute_vimp）...\n")
 flush.console()
-
-set.seed(seed_value)
 vimp_table <- tryCatch({
-  cat("  [1/", vimp_n_job + 1L, "] 基准预测\n", sep = "")
-  flush.console()
-  base_pred <- predict_prob_dead(
-    dyn_model, test_pack$timeData, test_pack$fixedData, t0
+  permutation_vimp_fallback(
+    model = dyn_model,
+    time_data = test_pack$timeData,
+    fixed_data = test_pack$fixedData,
+    outcome_df = test_pack$outcome,
+    numeric_names = numeric_covars,
+    factor_names = factor_covars,
+    seed = seed_value
   )
-  base_metrics <- eval_metrics(base_pred, test_pack$outcome)
-  base_err <- 1 - base_metrics$cindex
-  rows <- list()
-  step_i <- 1L
-
-  for (nm in vimp_long_names) {
-    step_i <- step_i + 1L
-    cat(sprintf("  [%d/%d] 置换轨迹 %s\n", step_i, vimp_n_job + 1L, nm))
-    flush.console()
-    time_perm <- permute_long_marker(test_pack$timeData, nm)
-    pred_i <- tryCatch(
-      predict_prob_dead(dyn_model, time_perm, test_pack$fixedData, t0),
-      error = function(e) NULL
-    )
-    if (is.null(pred_i)) next
-    err_i <- 1 - eval_metrics(pred_i, test_pack$outcome)$cindex
-    rows[[length(rows) + 1]] <- data.frame(
-      variable = nm,
-      importance = as.numeric(err_i - base_err),
-      group = "Longitudinal",
-      stringsAsFactors = FALSE
-    )
-  }
-  for (nm in vimp_numeric_names) {
-    step_i <- step_i + 1L
-    cat(sprintf("  [%d/%d] 置换数值 %s\n", step_i, vimp_n_job + 1L, nm))
-    flush.console()
-    fd <- test_pack$fixedData
-    fd[[nm]] <- sample(fd[[nm]])
-    pred_i <- tryCatch(
-      predict_prob_dead(dyn_model, test_pack$timeData, fd, t0),
-      error = function(e) NULL
-    )
-    if (is.null(pred_i)) next
-    err_i <- 1 - eval_metrics(pred_i, test_pack$outcome)$cindex
-    rows[[length(rows) + 1]] <- data.frame(
-      variable = nm,
-      importance = as.numeric(err_i - base_err),
-      group = "Numeric",
-      stringsAsFactors = FALSE
-    )
-  }
-  for (nm in vimp_factor_names) {
-    step_i <- step_i + 1L
-    cat(sprintf("  [%d/%d] 置换因子 %s\n", step_i, vimp_n_job + 1L, nm))
-    flush.console()
-    fd <- test_pack$fixedData
-    fd[[nm]] <- sample(fd[[nm]])
-    pred_i <- tryCatch(
-      predict_prob_dead(dyn_model, test_pack$timeData, fd, t0),
-      error = function(e) NULL
-    )
-    if (is.null(pred_i)) next
-    err_i <- 1 - eval_metrics(pred_i, test_pack$outcome)$cindex
-    rows[[length(rows) + 1]] <- data.frame(
-      variable = nm,
-      importance = as.numeric(err_i - base_err),
-      group = "Factor",
-      stringsAsFactors = FALSE
-    )
-  }
-
-  if (length(rows) == 0) {
-    data.frame(
-      variable = character(0),
-      importance = numeric(0),
-      group = character(0),
-      stringsAsFactors = FALSE
-    )
-  } else {
-    out <- dplyr::bind_rows(rows)
-    out[order(-out$importance, na.last = TRUE), , drop = FALSE]
-  }
 }, error = function(e) {
   cat("置换 VIMP 失败:", conditionMessage(e), "\n")
   flush.console()
@@ -895,16 +702,13 @@ if (!is.null(vimp_table) && nrow(vimp_table) > 0 && any(is.finite(vimp_table$imp
     ggplot2::labs(
       x = NULL,
       y = "Permutation VIMP (1 - C-index delta)",
-      title = sprintf(
-        "RSFLC变量重要性（%d条轨迹 + 固定协变量）",
-        length(vimp_long_names)
-      )
+      title = "RSFLC变量重要性（GCS + 固定协变量）"
     ) +
     ggplot2::theme_minimal(base_size = 12) +
     ggplot2::theme(
       plot.title = ggplot2::element_text(hjust = 0.5, face = "bold")
     )
-  ggplot2::ggsave(vimp_file, vimp_plot, width = 7, height = 7, dpi = 300)
+  ggplot2::ggsave(vimp_file, vimp_plot, width = 7, height = 5.5, dpi = 300)
 } else {
   vimp_table <- data.frame(
     variable = character(0),
@@ -920,25 +724,10 @@ cat("VIMP 已写入:", file.path(fig_dir, "01_VIMP.csv"), "\n")
 flush.console()
 
 # ---------------------------------------------------------------------------
-# 02–04 SHAP：可单独选中运行（用已有 dyn_model / train_pack / test_pack / test_eval）
-# 扰动全部固定协变量；纵向轨迹保持原值。人数 50（2 典型 + 48 随机），nsim = 5
+# 02–04 SHAP（仅固定协变量；GCS 轨迹不扰动）
 # ---------------------------------------------------------------------------
-if (!exists("dyn_model") || !exists("train_pack") || !exists("test_pack") || !exists("test_eval")) {
-  stop("找不到 dyn_model / train_pack / test_pack / test_eval。请在原会话从本段运行，不要从头 source。")
-}
-if (!exists("make_shap_pred_wrapper") || !exists("t0")) {
-  stop("找不到 make_shap_pred_wrapper 或 t0。请在原会话运行。")
-}
-if (!exists("RUN_SHAP")) RUN_SHAP <- TRUE
-if (!exists("seed_value")) seed_value <- 2026L
-if (!exists("fig_dir")) {
-  fig_dir <- "F:/文章_大论文/0722/实例研究代码/执行/图像_RSFLC"
-}
-dir.create(fig_dir, showWarnings = FALSE, recursive = TRUE)
-
-shap_covars <- setdiff(names(train_pack$fixedData), "hadm_id")
-train_predictors <- train_pack$fixedData[, shap_covars, drop = FALSE]
-test_predictors <- test_pack$fixedData[, shap_covars, drop = FALSE]
+train_predictors <- train_pack$fixedData[, fixed_covars, drop = FALSE]
+test_predictors <- test_pack$fixedData[, fixed_covars, drop = FALSE]
 test_hadm <- test_pack$fixedData$hadm_id
 
 shap_beeswarm_file <- file.path(fig_dir, "02_SHAP_beeswarm.png")
@@ -997,7 +786,7 @@ if (isTRUE(RUN_SHAP) && nrow(test_eval) >= 2L) {
   shap_indices <- c(
     high_risk_death_index,
     low_risk_survivor_index,
-    sample(remaining_indices, min(48L, length(remaining_indices)))
+    sample(remaining_indices, min(198L, length(remaining_indices)))
   )
   shap_indices <- unique(shap_indices[!is.na(shap_indices)])
   if (length(shap_indices) < 2L) {
@@ -1009,9 +798,9 @@ if (isTRUE(RUN_SHAP) && nrow(test_eval) >= 2L) {
   set.seed(seed_value)
   shap_bg_n <- min(100L, nrow(train_predictors))
   shap_bg <- train_predictors[sample(seq_len(nrow(train_predictors)), shap_bg_n), , drop = FALSE]
-
+  
   shap_rows <- vector("list", length(shap_ids))
-  cat("开始 SHAP：n =", length(shap_ids), " nsim = 5\n")
+  cat("开始 SHAP：n =", length(shap_ids), " nsim = 20（较慢）\n")
   flush.console()
   for (s in seq_along(shap_ids)) {
     hid <- shap_ids[s]
@@ -1026,7 +815,7 @@ if (isTRUE(RUN_SHAP) && nrow(test_eval) >= 2L) {
         X = shap_bg,
         pred_wrapper = wrap_i,
         newdata = shap_data[s, , drop = FALSE],
-        nsim = 5,
+        nsim = 20,
         adjust = TRUE
       ),
       error = function(e) {
@@ -1034,18 +823,18 @@ if (isTRUE(RUN_SHAP) && nrow(test_eval) >= 2L) {
         NULL
       }
     )
-    if (s %% 5 == 0 || s == length(shap_ids)) {
+    if (s %% 10 == 0 || s == length(shap_ids)) {
       cat(sprintf("  SHAP 进度 %d/%d\n", s, length(shap_ids)))
       flush.console()
     }
   }
-
+  
   shap_ok <- !vapply(shap_rows, is.null, logical(1))
   if (sum(shap_ok) >= 2L) {
     shap_mat <- do.call(rbind, lapply(shap_rows[shap_ok], as.matrix))
     shap_x <- shap_data[shap_ok, , drop = FALSE]
     shap_object <- shapviz::shapviz(shap_mat, X = shap_x)
-
+    
     shap_importance_table <- data.frame(
       variable = colnames(shap_mat),
       mean_abs_shap = as.numeric(colMeans(abs(shap_mat))),
@@ -1062,7 +851,7 @@ if (isTRUE(RUN_SHAP) && nrow(test_eval) >= 2L) {
       row.names = FALSE,
       fileEncoding = "UTF-8"
     )
-
+    
     shap_beeswarm_plot <- shapviz::sv_importance(
       shap_object,
       kind = "beeswarm",
@@ -1073,7 +862,7 @@ if (isTRUE(RUN_SHAP) && nrow(test_eval) >= 2L) {
         plot.title = ggplot2::element_text(hjust = 0.5, face = "bold")
       )
     ggplot2::ggsave(shap_beeswarm_file, shap_beeswarm_plot, width = 7, height = 6, dpi = 300)
-
+    
     patient_shap_plot_1 <- shapviz::sv_waterfall(
       shap_object,
       row_id = 1,
@@ -1088,13 +877,12 @@ if (isTRUE(RUN_SHAP) && nrow(test_eval) >= 2L) {
       ggplot2::ggtitle("典型患者2：低风险存活")
     patient_shap_plot <- patient_shap_plot_1 / patient_shap_plot_2
     ggplot2::ggsave(patient_shap_file, patient_shap_plot, width = 7, height = 9, dpi = 300)
-
-    fixed_vimp <- vimp_table$variable[vimp_table$group %in% c("Numeric", "Factor")]
-    top_shap_variable <- fixed_vimp[1]
+    
+    top_shap_variable <- setdiff(vimp_table$variable, "gcs")[1]
     if (
       length(top_shap_variable) == 0 ||
-        is.na(top_shap_variable) ||
-        !top_shap_variable %in% names(shap_x)
+      is.na(top_shap_variable) ||
+      !top_shap_variable %in% names(shap_x)
     ) {
       if (nrow(shap_importance_table) > 0) {
         top_shap_variable <- shap_importance_table$variable[1]
@@ -1264,7 +1052,7 @@ cat("七张图已保存至：\n", normalizePath(fig_dir), "\n")
 flush.console()
 
 # ---------------------------------------------------------------------------
-# 08 生成 Word 报告
+# 08 生成 Word 报告（对标 新RSF.R）
 # ---------------------------------------------------------------------------
 parameter_ft <- style_ft(flextable::flextable(parameter_table))
 performance_ft <- style_ft(flextable::flextable(performance_table)) %>%
@@ -1311,10 +1099,7 @@ rsflc_doc <- officer::body_add_par(
 rsflc_doc <- officer::body_add_par(
   rsflc_doc,
   paste0(
-    "结局为28天全因死亡。模型为 landmark 时刻 t0=5 天的 DynForest 分类森林",
-    "（纳入 20 条纵向轨迹与 11 个基线固定协变量）。",
-    "训练使用 stroke_longitudinal_knn_0824_group_fold.csv 中 group=1 的全体患者，",
-    "验证使用 group=2（约 30% 留出）。",
+    "结局为28天全因死亡。模型为 landmark 时刻 t0=5 天的 DynForest 分类森林（纳入 GCS 纵向轨迹与基线固定协变量）。",
     "训练集 C-index 采用 OOB 评价，测试集采用外部留出评价。",
     "AUC、28天 Brier 和 IBS 均按生存资料定义计算，其中 Brier 和 IBS 采用 IPCW 校正删失；",
     "因 RSFLC 输出为28天死亡概率，IPCW 风险矩阵在各评价时点使用同一预测概率作为累积风险近似。"
@@ -1343,11 +1128,11 @@ if (!is.null(vimp_ft)) {
 }
 rsflc_doc <- officer::body_add_par(
   rsflc_doc,
-  "VIMP 同时评价 20 条纵向轨迹与 11 个固定协变量；数值越大表示置换后预测性能下降越多。",
+  "VIMP 同时评价纵向 GCS 与固定协变量；数值越大表示置换后预测性能下降越多。",
   style = "Normal"
 )
 rsflc_doc <- safe_body_add_img(
-  rsflc_doc, vimp_file, 6.4, 6.0, "图1 VIMP变量重要性"
+  rsflc_doc, vimp_file, 6.4, 5.0, "图1 VIMP变量重要性"
 )
 
 rsflc_doc <- officer::body_add_break(rsflc_doc)
@@ -1356,7 +1141,7 @@ rsflc_doc <- officer::body_add_par(
   rsflc_doc,
   paste0(
     "SHAP 值表示各固定协变量对患者28天预测死亡风险的边际贡献；正值推动风险升高，负值推动风险降低。",
-    "本分析仅扰动固定协变量，纵向轨迹（GCS、SOFA、CNS）保持原值。",
+    "本分析仅扰动固定协变量，GCS 纵向轨迹保持原值。",
     top_shap_text
   ),
   style = "Normal"
@@ -1412,7 +1197,7 @@ rsflc_doc <- safe_body_add_img(
   rsflc_doc, km_file, 6.4, 5.4, "图7 高低风险组KM曲线"
 )
 
-docx_path <- file.path(out_dir, "RSFLC模型结果.docx")
+docx_path <- file.path(base_dir, "RSFLC模型结果.docx")
 print(rsflc_doc, target = docx_path)
 cat("RSFLC模型结果已保存至：\n", normalizePath(docx_path), "\n")
 flush.console()

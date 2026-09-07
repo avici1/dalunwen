@@ -27,7 +27,8 @@
 - 队列图与描述表：`03_descriptive_tables_and_flow.R`。
 - Cox/RSF 与解释：`04_static_models.R`、`05_static_explain.R`。
 - RSFLC 与 JM：`06_rsflc_model.R`、`08_joint_model.R`。
-- 五折调参：`07a_rsf_fivefold_cv_optional.R`、`07b_rsflc_fivefold_cv_optional.R`，原流程默认不执行。
+- 五折调参（文章最终口径）：`07a_rsf_fivefold_cv_optional.R`（RSF，31 变量，108 组）、`07b_rsflc_fivefold_cv_optional.R`（RSFLC，3 轨迹 + 28 固定，36 组）。仅 group=1，按五折 C-index 均值选优；原流程默认不执行。
+- 更早完整原稿：`02_clinical/03_models/individual_0826/rsf/0830_RSF_表5-3A_五折交叉验证调参.R`（8+20 变量、折内插补、108 组）、`02_clinical/03_models/individual_0826/rsflc/RSFLC_20V_tune_fold5.R`（20 轨迹 + 11 固定）。0826 的 `*_超参数筛选.R` 用 group=2 外验证集选参，不是表5-3 的正式口径。
 - 共同队列、置信区间、校准、DCA、时间依赖指标：`09_combine_results.R`。
 - Word 报告：`10_build_docx.R`。
 

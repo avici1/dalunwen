@@ -21,7 +21,11 @@
 - [02_clinical/03_models/individual_0826/cox/0826_COX_结果输出.R](../02_clinical/03_models/individual_0826/cox/0826_COX_%E7%BB%93%E6%9E%9C%E8%BE%93%E5%87%BA.R) — source_2/0722/实例研究代码/执行/0826_COX_结果输出.R（352 行）
 - [02_clinical/03_models/individual_0826/jm/0831_JM结果输出.R](../02_clinical/03_models/individual_0826/jm/0831_JM%E7%BB%93%E6%9E%9C%E8%BE%93%E5%87%BA.R) — source_2/0722/实例研究代码/执行/0831_JM结果输出.R（1345 行）
 - [02_clinical/03_models/individual_0826/rsf/0826_RSF_结果输出.R](../02_clinical/03_models/individual_0826/rsf/0826_RSF_%E7%BB%93%E6%9E%9C%E8%BE%93%E5%87%BA.R) — source_2/0722/实例研究代码/执行/0826_RSF_结果输出.R（723 行）
+- [02_clinical/03_models/individual_0826/rsf/0826_RSF_超参数筛选.R](../02_clinical/03_models/individual_0826/rsf/0826_RSF_%E8%B6%85%E5%8F%82%E6%95%B0%E7%AD%9B%E9%80%89.R) — 外验证集网格选参（与 support 副本同源）
+- [02_clinical/03_models/individual_0826/rsf/0830_RSF_表5-3A_五折交叉验证调参.R](../02_clinical/03_models/individual_0826/rsf/0830_RSF_%E8%A1%A85-3A_%E4%BA%94%E6%8A%98%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81%E8%B0%83%E5%8F%82.R) — 表5-3A 完整 108 组五折（原 0830/代码）
 - [02_clinical/03_models/individual_0826/rsflc/0827_RSFLC结果输出.R](../02_clinical/03_models/individual_0826/rsflc/0827_RSFLC%E7%BB%93%E6%9E%9C%E8%BE%93%E5%87%BA.R) — source_2/0722/实例研究代码/执行/0827_RSFLC结果输出.R（1418 行）
+- [02_clinical/03_models/individual_0826/rsflc/0826_RSFLC超参数筛选.R](../02_clinical/03_models/individual_0826/rsflc/0826_RSFLC%E8%B6%85%E5%8F%82%E6%95%B0%E7%AD%9B%E9%80%89.R) — 外验证集网格选参（与 support 副本同源）
+- [02_clinical/03_models/individual_0826/rsflc/RSFLC_20V_tune_fold5.R](../02_clinical/03_models/individual_0826/rsflc/RSFLC_20V_tune_fold5.R) — 20 轨迹完整五折网格（原 5折RSFLC）
 - [02_clinical/03_models/individual_0826/support/0826_RSFLC超参数筛选.R](../02_clinical/03_models/individual_0826/support/0826_RSFLC%E8%B6%85%E5%8F%82%E6%95%B0%E7%AD%9B%E9%80%89.R) — source_2/0722/实例研究代码/执行/0826_RSFLC超参数筛选.R（568 行）
 - [02_clinical/03_models/individual_0826/support/0826_RSF_超参数筛选.R](../02_clinical/03_models/individual_0826/support/0826_RSF_%E8%B6%85%E5%8F%82%E6%95%B0%E7%AD%9B%E9%80%89.R) — source_2/0722/实例研究代码/执行/0826_RSF_超参数筛选.R（291 行）
 - [02_clinical/03_models/individual_0826/support/0827_JM_base.R](../02_clinical/03_models/individual_0826/support/0827_JM_base.R) — source_2/0722/实例研究代码/执行/0827_JM_base.R（1233 行）
@@ -32,8 +36,8 @@
 - [02_clinical/03_models/unified_pipeline/04_static_models.R](../02_clinical/03_models/unified_pipeline/04_static_models.R) — source_2/0830/CODEX/脚本/04_static_models.R（155 行）
 - [02_clinical/03_models/unified_pipeline/05_static_explain.R](../02_clinical/03_models/unified_pipeline/05_static_explain.R) — source_2/0830/CODEX/脚本/05_static_explain.R（199 行）
 - [02_clinical/03_models/unified_pipeline/06_rsflc_model.R](../02_clinical/03_models/unified_pipeline/06_rsflc_model.R) — source_2/0830/CODEX/脚本/06_rsflc_model.R（221 行）
-- [02_clinical/03_models/unified_pipeline/07a_rsf_fivefold_cv_optional.R](../02_clinical/03_models/unified_pipeline/07a_rsf_fivefold_cv_optional.R) — source_2/0830/CODEX/脚本/07a_rsf_fivefold_cv_optional.R（52 行）
-- [02_clinical/03_models/unified_pipeline/07b_rsflc_fivefold_cv_optional.R](../02_clinical/03_models/unified_pipeline/07b_rsflc_fivefold_cv_optional.R) — source_2/0830/CODEX/脚本/07b_rsflc_fivefold_cv_optional.R（72 行）
+- [02_clinical/03_models/unified_pipeline/07a_rsf_fivefold_cv_optional.R](../02_clinical/03_models/unified_pipeline/07a_rsf_fivefold_cv_optional.R) — 文章 31 变量口径 RSF 五折网格（108 组，默认不跑）
+- [02_clinical/03_models/unified_pipeline/07b_rsflc_fivefold_cv_optional.R](../02_clinical/03_models/unified_pipeline/07b_rsflc_fivefold_cv_optional.R) — 文章 3 轨迹+28 固定口径 RSFLC 五折网格（36 组，默认不跑）
 - [02_clinical/03_models/unified_pipeline/08_joint_model.R](../02_clinical/03_models/unified_pipeline/08_joint_model.R) — source_2/0830/CODEX/脚本/08_joint_model.R（221 行）
 - [02_clinical/03_models/unified_pipeline/09_combine_results.R](../02_clinical/03_models/unified_pipeline/09_combine_results.R) — source_2/0830/CODEX/脚本/09_combine_results.R（120 行）
 - [02_clinical/03_models/unified_pipeline/10_build_docx.R](../02_clinical/03_models/unified_pipeline/10_build_docx.R) — source_2/0830/CODEX/脚本/10_build_docx.R（246 行）
