@@ -1,0 +1,49 @@
+[
+  {
+    "root": "F:\\文章\\大论文",
+    "query": "fastshap|shapviz|shap\\.Explainer|TreeExplainer|vectorized_mc_shap",
+    "matches": [],
+    "excluded": [
+      "site-packages",
+      ".venv",
+      "venv",
+      "_codex*",
+      ".git"
+    ]
+  },
+  {
+    "root": "F:\\文章_大论文",
+    "query": "fastshap|shapviz|shap\\.Explainer|TreeExplainer|vectorized_mc_shap",
+    "matches": [
+      "F:\\文章_大论文\\MIMIC数据库_代码\\TREA代码\\0402SHAP作图\\_rsflc_jm_append.R",
+      "F:\\文章_大论文\\MIMIC数据库_代码\\TREA代码\\0402SHAP作图\\SHAP.R",
+      "F:\\文章_大论文\\0722\\pythonProject1\\SHAP作图.py",
+      "F:\\文章_大论文\\0830\\CODEX\\脚本\\06_rsflc_model.R",
+      "F:\\文章_大论文\\0830\\CODEX\\脚本\\05_static_explain.R",
+      "F:\\文章_大论文\\0722\\实例研究代码\\RSFLC_baseline_0826.R",
+      "F:\\文章_大论文\\0722\\实例研究代码\\RSF_baseline_0826.R",
+      "F:\\文章_大论文\\0722\\实例研究代码\\5折RSFLC\\RSFLC最优模型输出结果.R",
+      "F:\\文章_大论文\\0722\\实例研究代码\\参考\\新RSF.R",
+      "F:\\文章_大论文\\0722\\实例研究代码\\5折RSF\\RSF最优模型输出结果.R",
+      "F:\\文章_大论文\\0830\\补充0831\\代码\\03_rsflc_survival.R",
+      "F:\\文章_大论文\\0830\\补充0831\\代码\\02b_static_explain.R",
+      "F:\\文章_大论文\\0830\\补充0831\\代码\\02_static_models.R",
+      "F:\\文章_大论文\\0722\\实例研究代码\\执行\\0826_RSFLC结果输出.R",
+      "F:\\文章_大论文\\0722\\实例研究代码\\代码\\RSF_baseline_0824.R",
+      "F:\\文章_大论文\\0722\\实例研究代码\\代码\\RSFLC_baseline_0825.R",
+      "F:\\文章_大论文\\0722\\实例研究代码\\执行\\0826_RSF_结果输出.R",
+      "F:\\文章_大论文\\0722\\实例研究代码\\执行\\0827_RSFLC结果输出.R",
+      "F:\\文章_大论文\\0830\\结果\\RSF5_4A\\RSF_5_4A_corrected.R",
+      "F:\\文章_大论文\\0830\\结果\\第五章完整重算_0831\\代码\\02b_static_explain.R",
+      "F:\\文章_大论文\\0830\\结果\\第五章完整重算_0831\\代码\\02_static_models.R",
+      "F:\\文章_大论文\\0830\\结果\\第五章完整重算_0831\\代码\\03_rsflc_survival.R"
+    ],
+    "excluded": [
+      "site-packages",
+      ".venv",
+      "venv",
+      "_codex*",
+      ".git"
+    ]
+  }
+]
